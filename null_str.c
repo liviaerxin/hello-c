@@ -1,6 +1,7 @@
 #include <stdio.h>
 
-int main() {
+int main()
+{
     char nullCharacter = '\0';
 
     printf("Decimal: %d\n", nullCharacter);
@@ -10,7 +11,7 @@ int main() {
     // The `sizeof(str)` would be 14
     char str[] = "Hello, World!";
     printf("%s\n", str);
-    
+
     printf("Size: %ld\n", sizeof(str));
     return 0;
 }

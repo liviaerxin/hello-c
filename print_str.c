@@ -40,13 +40,13 @@ int main()
     printf("\n\n");
 
     // Define a string using raw bytes, `0x00`: NULL-terminated string
-    char* bytePtr = "\x48\x65\x6c\x6c\x6f\x2c\x20\x57\x6f\x72\x6c\x64\x21\x00";
+    char *bytePtr = "\x48\x65\x6c\x6c\x6f\x2c\x20\x57\x6f\x72\x6c\x64\x21\x00";
     // char* bytePtr = (char[]){0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x2C, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64, 0x21, 0x00};
     printf("String in the raw byte char*: ");
     printf("%s", bytePtr);
     printf("\n\n");
 
-    char* utf8BytePtr = "\xe4\xbd\xa0\x00";
+    char *utf8BytePtr = "\xe4\xbd\xa0\x00";
     printf("String in the utf8 byte char*: %s\n", utf8BytePtr);
     printf("Bytes  in the char*: ");
     printBytes(utf8BytePtr);
