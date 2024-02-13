@@ -1,31 +1,72 @@
+/**
+ * @file daily_04_hamming_number.c
+ * @author your name (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2024-02-11
+ *
+ * [hamming numbers](https://en.wikipedia.org/wiki/Regular_number)
+ * [n-smooth numbers](https://en.wikipedia.org/wiki/Smooth_number)
+ *
+ * 36=2*2*3*3, factor: 2 and 3.
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 #include <stdio.h>
 #include <stdint.h>
 
-int is_hamming_number(int n) { 
-    if (n == 1) return 1;
-    if (n == 2) return 1;
-    if (n == 3) return 1;
-    if (n == 5) return 1;
-    if (n % 2 == 0) return is_hamming_number(n/2);
-    if (n % 3 == 0) return is_hamming_number(n/3);
-    if (n % 5 == 0) return is_hamming_number(n/5);
+int is_hamming_number(int n)
+{
+    if (n == 1)
+        return 1;
+    if (n == 2)
+        return 1;
+    if (n == 3)
+        return 1;
+    if (n == 5)
+        return 1;
+    if (n % 2 == 0)
+        return is_hamming_number(n / 2);
+    if (n % 3 == 0)
+        return is_hamming_number(n / 3);
+    if (n % 5 == 0)
+        return is_hamming_number(n / 5);
     return 0;
 }
 
-uint64_t hamber(int nth)
+#define MIN(a, b) (a) > (b) ? (b) : (a)
+#define MAX(a, b) (a) > (b) ? (a) : (b)
+
+uint64_t hamber(int n)
 {
-    int i = 0, n = 1;
-    while(i < nth){
-        if(is_hamming_number(n)){
-            i++;
-        }
-        n++;
+    uint64_t *h = (uint64_t *)malloc(sizeof(uint64_t) * n);
+
+    h[0] = 1;
+    uint64_t x2 = 2, x3 = 3, x5 = 5;
+
+    int i2 = 0, i3 = 0, i5 = 0;
+    for (int i = 1; i < n; i++)
+    {
+        h[i] = MIN(MIN(x2, x3), x5);
+        if (h[i] == x2) x2 = h[++i2] * 2;
+        if (h[i] == x3) x3 = h[++i3] * 3;
+        if (h[i] == x5) x5 = h[++i5] * 5;
     }
-    n = n- 1;
-    return n;
+
+    for (int i = 0; i < n; i++) printf("%llu ", h[i]);
+    printf("\n");
+
+    uint64_t hamber_n = h[n - 1];
+    free(h);
+
+    printf("%llu\n", hamber_n);
+
+    return hamber_n;
 }
 
-int main() {
+int main()
+{
     printf("%d: %d\n", 32, is_hamming_number(32));
     printf("%d: %d\n", 33, is_hamming_number(33));
     printf("%d: %d\n", 34, is_hamming_number(34));
@@ -34,7 +75,5 @@ int main() {
     printf("%d: %d\n", 405, is_hamming_number(405));
     printf("%d: %d\n", 4150000, is_hamming_number(4150000));
 
-
     printf("%d: %d\n", 1000, hamber(1000));
-
 }
