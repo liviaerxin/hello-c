@@ -30,41 +30,41 @@ remote    address : 93.184.216.34
 #include <unistd.h>
 #define PORT 80
 
-void connect2 (int* sock_fd, const char* const dst) {
+void connect2(int* sock_fd, const char* const dst) {
 
-    *sock_fd = socket (AF_INET, SOCK_STREAM, 0);
-    assert (*sock_fd >= 3);
+    *sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+    assert(*sock_fd >= 3);
 
-    struct sockaddr_in sin = { .sin_family = AF_INET, .sin_port = htons (PORT), .sin_addr = {} };
+    struct sockaddr_in sin = { .sin_family = AF_INET, .sin_port = htons(PORT), .sin_addr = {} };
     // Convert IPv4 and IPv6 addresses from text to binary
-    assert (1 == inet_pton (AF_INET, dst, &(sin.sin_addr)) && "\nInvalid address/ Address not supported \n");
+    assert(1 == inet_pton(AF_INET, dst, &(sin.sin_addr)) && "\nInvalid address/ Address not supported \n");
 
-    assert (0 == connect (*sock_fd, (struct sockaddr*)(&sin), sizeof (struct sockaddr_in)) && "\nConnect to dst failed \n");
+    assert(0 == connect(*sock_fd, (struct sockaddr*)(&sin), sizeof(struct sockaddr_in)) && "\nConnect to dst failed \n");
 }
 
-void disconnect (int* sock_fd) {
-    close (*sock_fd);
+void disconnect(int* sock_fd) {
+    close(*sock_fd);
     *sock_fd = -1;
 }
 
-int main (int argc, const char* argv[]) {
+int main(int argc, const char* argv[]) {
 
-    assert (argc == 2);
-    assert (argv[1] && strlen (argv[1]));
+    assert(argc == 2);
+    assert(argv[1] && strlen(argv[1]));
     const char* const remoteaddr_s = argv[1];
     int sock_fd;
     // const char *const remoteaddr_s = "93.184.216.34"; // example.org
 
-    connect2 (&sock_fd, remoteaddr_s);
+    connect2(&sock_fd, remoteaddr_s);
 
     struct sockaddr_in addr;
     struct ifaddrs* ifaddr;
     struct ifaddrs* ifa;
     socklen_t addr_len;
 
-    addr_len = sizeof (addr);
-    getsockname (sock_fd, (struct sockaddr*)&addr, &addr_len);
-    getifaddrs (&ifaddr);
+    addr_len = sizeof(addr);
+    getsockname(sock_fd, (struct sockaddr*)&addr, &addr_len);
+    getifaddrs(&ifaddr);
 
     // look which interface contains the wanted IP.
     // When found, ifa->ifa_name contains the name of the interface (eth0, eth1,
@@ -78,18 +78,18 @@ int main (int argc, const char* argv[]) {
                     if (ifa->ifa_name) {
                         // Found it
                         char ifaddr_s[INET_ADDRSTRLEN] = {};
-                        assert (ifaddr_s == inet_ntop (AF_INET, &(inaddr->sin_addr), ifaddr_s, INET_ADDRSTRLEN));
+                        assert(ifaddr_s == inet_ntop(AF_INET, &(inaddr->sin_addr), ifaddr_s, INET_ADDRSTRLEN));
 
-                        printf ("interface index   : %d\n", if_nametoindex (ifa->ifa_name));
-                        printf ("interface name    : %s\n", ifa->ifa_name);
-                        printf ("interface address : %s\n", ifaddr_s);
-                        printf ("remote    address : %s\n", remoteaddr_s);
+                        printf("interface index   : %d\n", if_nametoindex(ifa->ifa_name));
+                        printf("interface name    : %s\n", ifa->ifa_name);
+                        printf("interface address : %s\n", ifaddr_s);
+                        printf("remote    address : %s\n", remoteaddr_s);
                     }
                 }
             }
         }
     }
-    freeifaddrs (ifaddr);
-    disconnect (&sock_fd);
+    freeifaddrs(ifaddr);
+    disconnect(&sock_fd);
     return 0;
 }

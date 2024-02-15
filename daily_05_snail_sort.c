@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-void snail (int row, int colum, int matrix[row][colum], int* result) {
+void snail(int row, int colum, int matrix[row][colum], int* result) {
     int top = 0, bottom = row - 1, left = 0, right = colum - 1;
     int count = 0;
 
@@ -16,7 +16,7 @@ void snail (int row, int colum, int matrix[row][colum], int* result) {
     }
 }
 
-int main () {
+int main() {
     int matrix[4][4] = {
         { 1, 2, 3, 4 },
         { 5, 6, 7, 8 },
@@ -25,8 +25,8 @@ int main () {
     };
     int row = 4, colum = 4;
     int result[row * colum];
-    snail (row, colum, matrix, result);
+    snail(row, colum, matrix, result);
 
-    for (int i = 0; i < row * colum; i++) printf ("%d ", result[i]);
-    printf ("\n");
+    for (int i = 0; i < row * colum; i++) printf("%d ", result[i]);
+    printf("\n");
 }
