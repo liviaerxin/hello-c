@@ -33,8 +33,8 @@ int is_hamming_number (int n) {
 uint64_t hamber (int n) {
     uint64_t* h = (uint64_t*)malloc (sizeof (uint64_t) * n);
 
-    h[0] = 1;
-    uint64_t x2 = 2, x3 = 3, x5 = 5;
+  h[0] = 1;
+  uint64_t x2 = 2, x3 = 3, x5 = 5;
 
     int i2 = 0, i3 = 0, i5 = 0;
     for (int i = 1; i < n; i++) {
@@ -52,7 +52,7 @@ uint64_t hamber (int n) {
 
     printf ("%llu\n", hamber_n);
 
-    return hamber_n;
+  return hamber_n;
 }
 
 int main () {
