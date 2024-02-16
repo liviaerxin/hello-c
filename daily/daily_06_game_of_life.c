@@ -1,3 +1,14 @@
+/*
+ * File: daily_06_game_of_life.c
+ * Project: daily
+ * Created Date: Fri Feb 16 2024
+ * Author: Frank
+ * Last Modified: Fri Feb 16 2024
+ * Modified By: Frank
+ * Topic: [Conway's Game of Life - Unlimited Edition](https://www.codewars.com/kata/52423db9add6f6fc39000354)
+ */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -1,3 +1,13 @@
+/*
+ * File: daily_07_spiral.c
+ * Project: daily
+ * Created Date: Fri Feb 16 2024
+ * Author: Frank
+ * Last Modified: Fri Feb 16 2024
+ * Modified By: Frank
+ * Topic: [Make a spiral](https://www.codewars.com/kata/534e01fbbb17187c7e0000c6)
+ */
+
 #include <stdio.h>
 
 void spiralize(unsigned n, int spiral[n][n]) {

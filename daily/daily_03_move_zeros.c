@@ -1,3 +1,14 @@
+/*
+ * File: daily_03_move_zeros.c
+ * Project: daily
+ * Created Date: Fri Feb 16 2024
+ * Author: Frank
+ * Last Modified: Fri Feb 16 2024
+ * Modified By: Frank
+ * Topic: [Moving Zeros To The End](https://www.codewars.com/kata/52597aa56021e91c93000cb0)
+ */
+
+
 #include <stdio.h>
 
 void swap(int arr[], int i, int j) {

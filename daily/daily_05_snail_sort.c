@@ -1,3 +1,14 @@
+/*
+ * File: daily_05_snail_sort.c
+ * Project: daily
+ * Created Date: Fri Feb 16 2024
+ * Author: Frank
+ * Last Modified: Fri Feb 16 2024
+ * Modified By: Frank
+ * Topic: [Snail](https://www.codewars.com/kata/521c2db8ddc89b9b7a0000c1)
+ */
+
+
 #include <stdio.h>
 
 void snail(int row, int colum, int matrix[row][colum], int* result) {

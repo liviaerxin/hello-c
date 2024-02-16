@@ -1,18 +1,18 @@
-/**
- * @file daily_04_hamming_number.c
- * @author your name (you@domain.com)
- * @brief
- * @version 0.1
- * @date 2024-02-11
- *
- * [hamming numbers](https://en.wikipedia.org/wiki/Regular_number)
- * [n-smooth numbers](https://en.wikipedia.org/wiki/Smooth_number)
- *
+/*
+ * File: daily_04_hamming_number.c
+ * Project: daily
+ * Created Date: Fri Feb 16 2024
+ * Author: Frank
+ * Last Modified: Fri Feb 16 2024
+ * Modified By: Frank
+ * Topic: 
+ * - [Hamming Numbers](https://www.codewars.com/kata/526d84b98f428f14a60008da)
+ * - [hamming numbers](https://en.wikipedia.org/wiki/Regular_number)
+ * - [n-smooth numbers](https://en.wikipedia.org/wiki/Smooth_number)
+ * Brief:
  * 36=2*2*3*3, factor: 2 and 3.
- *
- * @copyright Copyright (c) 2024
- *
  */
+
 #include <stdint.h>
 #include <stdio.h>
 

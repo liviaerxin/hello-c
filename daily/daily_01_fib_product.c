@@ -1,3 +1,14 @@
+/*
+ * File: daily_01_fib_product.c
+ * Project: daily
+ * Created Date: Fri Feb 16 2024
+ * Author: Frank
+ * Last Modified: Fri Feb 16 2024
+ * Modified By: Frank
+ * Topic: [Product of consecutive Fib numbers](https://www.codewars.com/kata/5541f58a944b85ce6d00006a)
+ */
+
+
 #include <stdio.h>
 
 float newton_sqrt(float x, float t) {

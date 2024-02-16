@@ -5,6 +5,7 @@
  * Author: Frank
  * Last Modified: Thu Feb 15 2024
  * Modified By: Frank
+ * Topic: [Counting Change Combinations](https://www.codewars.com/kata/541af676b589989aed0009e7)
  */
 #include <stdio.h>
 

@@ -5,7 +5,7 @@
  * Author: Frank
  * Last Modified: Thu Feb 15 2024
  * Modified By: Frank
- * topic: https://www.codewars.com/kata/52a78825cdfc2cfc87000005/train/c
+ * Topic: [](https://www.codewars.com/kata/52a78825cdfc2cfc87000005)
  */
 
 
