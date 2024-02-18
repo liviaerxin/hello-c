@@ -9,6 +9,7 @@
  */
 
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -17,15 +18,19 @@ struct Token {
     double value;
 };
 
+char* tokstr[] = { "+", "-", "*", "/", "number", "(", ")", "EOF", "UNKNOWN" };
+
 enum {
     PLUS,
     MINUS,
     MULTIPLY,
     DIVIDE,
     NUMBER,
+    LPAREN,
+    RPAREN,
+    T_EOF,
+    T_UNKNOWN,
 };
-
-char* tokstr[] = { "+", "-", "*", "/", "number" };
 
 void print_token(struct Token* t) {
     printf("Token %s", tokstr[t->token]);
@@ -33,39 +38,61 @@ void print_token(struct Token* t) {
     printf("\n");
 }
 
-void lex(const char* expression) {
-    char* pEnd = expression;
-    int eof = 0;
-    int i = 0;
+double scan_double(const char* expression, const char** endexpression) {
+    char* endstr;
+    double value = strtod(expression, &endstr);
+    *endexpression = endstr;
+    return value;
+}
 
-    while (eof == 0) {
-        char c = *pEnd++;
-        // printf("%c\n", c);
-        while (' ' == c || '\t' == c || '\n' == c || '\r' == c || '\f' == c) { c = *pEnd++; }
+int scan(const char* expression, struct Token* t, const char** endexpression) {
+    const char* pEnd = expression;
+    // Skip as many whitespace characters as necessary.(?https://cplusplus.com/isspace)
+    char c = *pEnd++;
+    // printf("%c\n", c);
+    while (' ' == c || '\t' == c || '\n' == c || '\r' == c || '\f' == c) { c = *pEnd++; }
 
-        switch (c) {
-        case '\0': eof = 1; break;
-        case '+': t->token = PLUS; break;
-        case '-': t->token = MINUS; break;
-        case '*': t->token = MULTIPLY; break;
-        case '/': t->token = DIVIDE; break;
-        case '0' ... '9':
-        case '.':
+    switch (c) {
+    case '\0':
+        t->token = T_EOF;
+        endexpression = NULL;
+        return 0;
+    case '+': t->token = PLUS; break;
+    case '-':
+        if (isdigit(*pEnd)) {
             pEnd--;
-            t->value = strtod(pEnd, &pEnd);
             t->token = NUMBER;
-            break;
-        default:
-            break;
+            t->value = scan_double(pEnd, &pEnd);
+        } else {
+            t->token = MINUS;
         }
-        // tokens[i++] = t;
-        print_token(t);
+        break;
+    case '*': t->token = MULTIPLY; break;
+    case '/': t->token = DIVIDE; break;
+    case '(': t->token = LPAREN; break;
+    case ')': t->token = RPAREN; break;
+    // Scan literal number and convert it to double
+    case '0' ... '9':
+    case '.':
+        pEnd--;
+        t->token = NUMBER;
+        t->value = scan_double(pEnd, &pEnd);
+        break;
+    default: t->token = T_UNKNOWN; break;
     }
+    *endexpression = pEnd;
+    return 1;
+}
 
-    // printf("Tokens %d:\n", i);
-    // for(int j = 0; j < i; j++){
-    //     print_token(tokens[i]);
-    // }
+void lex(const char* expression) {
+    printf("%s:\n", expression);
+    struct Token t;
+    const char* p = expression;
+    while (scan(p, &t, &p)) {
+        // printf("%s\n", p);
+        print_token(&t);
+    }
+    printf("\n");
 }
 
 double calculate(const char* expression) {
@@ -73,8 +100,10 @@ double calculate(const char* expression) {
 }
 
 int main() {
-    printf("%d\n", 1 - -1);
-    lex("2 + 32 * 5 - 8 / 31");
+    // lex("2 + 32 * 5 - 8 / 31");
+    // lex("2 + 32 * (5 - 8) / 31");
+    lex("12*-1");
+    lex("2 /2+3 * 4.75- -6");
 
     // calculate("1+1");
 }

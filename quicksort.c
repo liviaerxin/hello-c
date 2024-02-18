@@ -26,32 +26,37 @@ int partition(int arr[], int left, int right) {
 
     while (1) {
         while (i < right && arr[i] < pivot) i++;
-        while (j >= left && arr[j] > pivot) j--;
+        while (j >= left && arr[j] >= pivot) j--;
+        
         // printf("%d %d\n", i, j);
-
-        if ((i - j) == 1) {
-            break;
-        }
+        if ((i - j) == 1) { break; }
 
         swap(arr, i, j);
     }
-    printf("%d %d\n", i, j);
+    // printf("%d %d\n", i, j);
     swap(arr, i, right);
 
     return i;
 }
 
+void print_array(int n, int arr[n]) {
+    for (int i = 0; i < n; i++) printf("%d ", arr[i]);
+    printf("\n");
+}
+
 int main() {
 
     int numbers[] = { 25, 50, 10, 30, 80, 45, 25, 15, 80, 100, 60, 75 };
-    printf("%zu\n", ARRAY_LENGTH(numbers));
+    // int numbers[] = { 3, 2, 1 };
+    // int numbers[] = { 1, 2, 3 };
 
-    quicksort(numbers, 0, ARRAY_LENGTH(numbers));
+    printf("before: ");
+    print_array(ARRAY_LENGTH(numbers), numbers);
 
-    for (size_t i = 0; i < ARRAY_LENGTH(numbers); i++) {
-        printf("%d ", numbers[i]);
-    }
-    printf("\n");
+    quicksort(numbers, 0, ARRAY_LENGTH(numbers) - 1);
+
+    printf("after : ");
+    print_array(ARRAY_LENGTH(numbers), numbers);
 
     return 1;
 }
