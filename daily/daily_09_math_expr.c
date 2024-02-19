@@ -18,13 +18,15 @@ struct Token {
     double value;
 };
 
-char* tokstr[] = { "+", "-", "*", "/", "number", "(", ")", "EOF", "UNKNOWN" };
+char* tokstr[] = { "+", "-", "*", "/", "u+", "u-", "number", "(", ")", "EOF", "UNKNOWN" };
 
 enum {
     PLUS,
     MINUS,
     MULTIPLY,
     DIVIDE,
+    UNARY_PLUS,
+    UNARY_MINUS,
     NUMBER,
     LPAREN,
     RPAREN,
@@ -45,6 +47,8 @@ double scan_double(const char** expression_ptr) {
     return value;
 }
 
+static struct Token pt = { T_UNKNOWN, 0 };
+
 int scan(const char** expression_ptr, struct Token* t) {
     const char* pEnd = *expression_ptr;
     // Skip as many whitespace characters as necessary.(?https://cplusplus.com/isspace)
@@ -57,15 +61,29 @@ int scan(const char** expression_ptr, struct Token* t) {
 
     switch (c) {
     case '\0': t->token = T_EOF; return 0;
-    case '+': t->token = PLUS; break;
-    case '-':
-        if (isdigit(*(pEnd + 1))) {
-            t->token = NUMBER;
-            t->value = scan_double(&pEnd);
-            pEnd--;
+    case '+':
+        printf("+ %d\n", pt.token);
+        if (pt.token == NUMBER) {
+            t->token = PLUS;
+            pt.token = 
         } else {
-            t->token = MINUS;
+            t->token = UNARY_PLUS;
         }
+        break;
+    case '-':
+        // printf("- %d\n", pt.token);
+        if (pt.token == NUMBER) {
+            t->token = MINUS;
+        } else {
+            t->token = UNARY_MINUS;
+        }
+        // if (isdigit(*(pEnd + 1))) {
+        //     t->token = NUMBER;
+        //     t->value = scan_double(&pEnd);
+        //     pEnd--;
+        // } else {
+        //     t->token = MINUS;
+        // }
         break;
     case '*': t->token = MULTIPLY; break;
     case '/': t->token = DIVIDE; break;
@@ -82,6 +100,7 @@ int scan(const char** expression_ptr, struct Token* t) {
     }
     pEnd++;
     *expression_ptr = pEnd;
+    pt.token == t->token;
     return 1;
 }
 
@@ -107,6 +126,7 @@ term        :   factor
 
 factor      :   NUMBER
             |   ( expression )
+            |   -factor
 
 */
 double parse_expression(const char** expression);
@@ -115,13 +135,18 @@ double parse_factor(const char** expression_ptr);
 
 double parse_factor(const char** expression_ptr) {
     struct Token t;
+    printf("%s\n", *expression_ptr);
     scan(expression_ptr, &t);
+    printf("%s\n", *expression_ptr);
+    print_token(&t);
     if (t.token == NUMBER) return t.value;
     if (t.token == LPAREN) {
         double v = parse_expression(expression_ptr);
         expression_ptr++;
         return v;
     }
+    if (t.token == UNARY_MINUS) { return -1 * parse_factor(expression_ptr); }
+    if (t.token == UNARY_PLUS) { return parse_factor(expression_ptr); }
 }
 
 double parse_term(const char** expression) {
@@ -129,6 +154,7 @@ double parse_term(const char** expression) {
     double left = parse_factor(&p);
     struct Token op;
     scan(&p, &op);
+    // print_token(&op);
     while (1) {
         if (op.token == MULTIPLY) {
             left *= parse_factor(&p);
@@ -149,6 +175,7 @@ double parse_expression(const char** expression) {
     double left = parse_term(&p);
     struct Token op;
     scan(&p, &op);
+    print_token(&op);
     while (1) {
         if (op.token == T_EOF) {
             p--;
@@ -167,23 +194,28 @@ double parse_expression(const char** expression) {
 }
 
 double calculate(const char* expression) {
-    return 0;
+    pt.token = T_UNKNOWN;
+    return parse_expression(&expression);
 }
 
 int main() {
-    lex("2 + 3 * 5");
-    // lex("2 + 32 * 5 - 8 / 31");
-    // lex("2 + 32 * (5 - 8) / 31");
+    // lex("-(4)");
+    // lex("1-1");
+    // lex("1 -1");
+    // lex("1- -1");
     // lex("12*-1");
-    // lex("2 /2+3 * 4.75- -6");
+    // lex("2 + 32 * (5 - 8) / 31");
+    // lex("12*- 1");
+    lex("2 /2+3 * 4.75- -6");
 
     // calculate("1+1");
     // printf("%f\n", parse_expression(&(const char*){ "2+3*5" }));
     // printf("%f\n", parse_expression(&(const char*){ "12*-1" }));
     // printf("%f\n", parse_expression(&(const char*){ "1 - 1" }));
-    // printf("%f\n", parse_expression(&(const char*){ "-123" }));
+    // printf("%f\n", calculate("-123"));
     // printf("%f\n", parse_expression(&(const char*){ "2 /2+3 * 4.75- -6" }));
     // printf("%f\n", parse_expression(&(const char*){ "2 + 32 * 5 - 8 / 31" }));
-    // printf("%f\n", parse_expression(&(const char*){ "2 / (2 + 3) * 4.33 - -6" }));
-    printf("%f\n", parse_expression(&(const char*){ "((8.87)+6.86*7.25-9.97)" }));
+    printf("21.25=%f\n", calculate("2 /2+3 * 4.75- -6"));
+    // printf("-7=%f\n", calculate("((2+5)*(3-4))"));
+    // printf("2=%f\n", calculate("6 + -(4)"));
 }
