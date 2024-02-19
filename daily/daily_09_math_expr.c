@@ -38,31 +38,31 @@ void print_token(struct Token* t) {
     printf("\n");
 }
 
-double scan_double(const char* expression, const char** endptr) {
+double scan_double(const char** expression_ptr) {
     char* endstr;
-    double value = strtod(expression, &endstr);
-    *endptr = endstr;
+    double value = strtod(*expression_ptr, &endstr);
+    *expression_ptr = endstr;
     return value;
 }
 
-int scan(const char* expression, struct Token* t, const char** endptr) {
-    const char* pEnd = expression;
+int scan(const char** expression_ptr, struct Token* t) {
+    const char* pEnd = *expression_ptr;
     // Skip as many whitespace characters as necessary.(?https://cplusplus.com/isspace)
-    char c = *pEnd++;
+    char c = *pEnd;
     // printf("%c\n", c);
-    while (' ' == c || '\t' == c || '\n' == c || '\r' == c || '\f' == c) { c = *pEnd++; }
+    while (' ' == c || '\t' == c || '\n' == c || '\r' == c || '\f' == c) {
+        pEnd++;
+        c = *pEnd;
+    }
 
     switch (c) {
-    case '\0':
-        t->token = T_EOF;
-        endptr = NULL;
-        return 0;
+    case '\0': t->token = T_EOF; return 0;
     case '+': t->token = PLUS; break;
     case '-':
-        if (isdigit(*pEnd)) {
-            pEnd--;
+        if (isdigit(*(pEnd + 1))) {
             t->token = NUMBER;
-            t->value = scan_double(pEnd, &pEnd);
+            t->value = scan_double(&pEnd);
+            pEnd--;
         } else {
             t->token = MINUS;
         }
@@ -74,75 +74,95 @@ int scan(const char* expression, struct Token* t, const char** endptr) {
     // Scan literal number and convert it to double
     case '0' ... '9':
     case '.':
-        pEnd--;
         t->token = NUMBER;
-        t->value = scan_double(pEnd, &pEnd);
+        t->value = scan_double(&pEnd);
+        pEnd--;
         break;
     default: t->token = T_UNKNOWN; break;
     }
-    *endptr = pEnd;
+    pEnd++;
+    *expression_ptr = pEnd;
     return 1;
 }
 
 void lex(const char* expression) {
     printf("%s:\n", expression);
-
     struct Token t;
     const char* p = expression;
-    while (scan(p, &t, &p)) {
+    while (scan(&p, &t)) {
         // printf("%s\n", p);
         print_token(&t);
     }
     printf("\n");
 }
 
-double parse_factor(const char* expression, const char** endptr) {
-    const char* p = expression;
+/* BNF(Backus-Naur Form) grammar:
+expression  :   term
+            |   expression + expression
+            |   expression - expression
+
+term        :   factor
+            |   term * term
+            |   term / term
+
+factor      :   NUMBER
+            |   ( expression )
+
+*/
+double parse_expression(const char** expression);
+double parse_term(const char** expression_ptr);
+double parse_factor(const char** expression_ptr);
+
+double parse_factor(const char** expression_ptr) {
     struct Token t;
-    scan(p, &t, &p);
-    *endptr = p;
+    scan(expression_ptr, &t);
     if (t.token == NUMBER) return t.value;
-    if (t.token == LPAREN) return parse_expression(p, endptr);
+    if (t.token == LPAREN) {
+        double v = parse_expression(expression_ptr);
+        expression_ptr++;
+        return v;
+    }
 }
 
-double parse_term(const char* expression, const char** endptr) {
-    const char* p = expression;
-    double left = parse_factor(p, &p);
+double parse_term(const char** expression) {
+    const char* p = *expression;
+    double left = parse_factor(&p);
     struct Token op;
-    scan(p, &op, &p);
+    scan(&p, &op);
     while (1) {
         if (op.token == MULTIPLY) {
-            left *= parse_factor(p, &p);
+            left *= parse_factor(&p);
         } else if (op.token == DIVIDE) {
-            left /= parse_factor(p, &p);
+            left /= parse_factor(&p);
         } else {
+            p--;
             break;
         }
-        scan(p, &op, &p);
+        scan(&p, &op);
     }
-    p--;
-    *endptr = p;
+    *expression = p;
     return left;
 }
 
 double parse_expression(const char** expression) {
     const char* p = *expression;
-    double left = parse_term(p, &p);
+    double left = parse_term(&p);
     struct Token op;
-    scan(p, &op, &p);
-    // print_token(&op);
+    scan(&p, &op);
     while (1) {
         if (op.token == T_EOF) {
+            p--;
+            break;
+        } else if (op.token == RPAREN) {
             break;
         } else if (op.token == PLUS) {
-            left += parse_term(p, &p);
+            left += parse_term(&p);
         } else if (op.token == MINUS) {
-            left -= parse_term(p, &p);
+            left -= parse_term(&p);
         }
-        scan(p, &op, &p);
+        scan(&p, &op);
     }
-    p--;
-    *expression = p; 
+    *expression = p;
     return left;
 }
 
@@ -158,11 +178,12 @@ int main() {
     // lex("2 /2+3 * 4.75- -6");
 
     // calculate("1+1");
-    printf("%f\n", parse_expression("2+3*5"));
-    // printf("%f\n", parse_expression("2+3*5"));
-    // printf("%f\n", parse_expression("12*-1"));
-    // printf("%f\n", parse_expression("1 - 1"));
-    // printf("%f\n", parse_expression("-123"));
-    // printf("%f\n", parse_expression("2 /2+3 * 4.75- -6"));
-    // printf("%f\n", parse_expression("2 + 32 * 5 - 8 / 31"));
+    // printf("%f\n", parse_expression(&(const char*){ "2+3*5" }));
+    // printf("%f\n", parse_expression(&(const char*){ "12*-1" }));
+    // printf("%f\n", parse_expression(&(const char*){ "1 - 1" }));
+    // printf("%f\n", parse_expression(&(const char*){ "-123" }));
+    // printf("%f\n", parse_expression(&(const char*){ "2 /2+3 * 4.75- -6" }));
+    // printf("%f\n", parse_expression(&(const char*){ "2 + 32 * 5 - 8 / 31" }));
+    // printf("%f\n", parse_expression(&(const char*){ "2 / (2 + 3) * 4.33 - -6" }));
+    printf("%f\n", parse_expression(&(const char*){ "((8.87)+6.86*7.25-9.97)" }));
 }
