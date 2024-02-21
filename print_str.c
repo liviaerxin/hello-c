@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define NULL_CHAR '\0'
 
@@ -11,6 +13,15 @@ void printBytes(const char* str) {
 
 void printChars(const char* str) {
     while (*str != NULL_CHAR) printf("%c ", *str++);
+}
+
+char* strdup(const char* s) {
+    size_t slen = strlen(s);
+    char* result = malloc(slen + 1);
+    if (result == NULL) { return NULL; }
+
+    memcpy(result, s, slen + 1);
+    return result;
 }
 
 int main() {
@@ -47,6 +58,10 @@ int main() {
     printf("Bytes  in the char*: ");
     printBytes(utf8BytePtr);
     printf("\n\n");
+
+    char s1[20] = "String";
+    char* s2 = strdup(s1);
+    printf("%s\n", s2);
 
     return 0;
 }

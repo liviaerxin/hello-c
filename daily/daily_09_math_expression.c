@@ -5,7 +5,7 @@
  * Author: Frank
  * Last Modified: Thu Feb 15 2024
  * Modified By: Frank
- * Topic: [](https://www.codewars.com/kata/52a78825cdfc2cfc87000005)
+ * Topic: [Evaluate mathematical expression](https://www.codewars.com/kata/52a78825cdfc2cfc87000005)
  */
 
 
@@ -166,7 +166,7 @@ double parse_factor(const char** expression_ptr) {
     if (t.token == NUMBER) return t.value;
     if (t.token == LPAREN) {
         double v = parse_expression(expression_ptr);
-        expression_ptr++;
+        // expression_ptr++;
         return v;
     }
     if (t.token == UNARY_MINUS) { return -1 * parse_factor(expression_ptr); }
@@ -216,7 +216,7 @@ double parse_expression(const char** expression_ptr) {
 }
 
 double calculate(const char* expression) {
-    free_previous();
+    // free_previous();
     free_putback();
     return parse_expression(&expression);
 }
