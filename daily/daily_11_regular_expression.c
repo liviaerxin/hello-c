@@ -10,19 +10,19 @@
 
 
 /* BNF
-<expression>    :   <term>
-                |   <term> "|" <term>
+expression      :   term
+                |   term `|` term
 
-<term>          :   <factor>
-                |   <term> <term>
+term            :   factor
+                |   term term
 
-<factor>        :   <atom>
-                |   <atom> "*"
+factor          :   atom
+                |   atom `*`
 
-<atom>          :   <char>
-                | "(" <expression> ")"
+atom            :   CHAR
+                | `(` expression `)`
 
-<char>          : any valid character except metacharacters (e.g., "*", "|", "(")
+CHAR            : any valid character except meta characters (e.g., "*", "|", "(")
 */
 
 #include <stdio.h>
