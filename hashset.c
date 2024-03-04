@@ -61,6 +61,7 @@ bool hashSetInsert(hashSet* obj, int val) {
     new->next = obj->items[key];
     obj->items[key] = new;
     obj->size++;
+
     return true;
 }
 
@@ -79,21 +80,13 @@ bool hashSetRemove(hashSet* obj, int val) {
             }
             free(item);
             obj->size--;
-            return true;}
-        
+            return true;
+        }
+
         prev = item;
         item = item->next;
     }
     return false;
-}
-
-int hashSetGetRandom(hashSet* obj) {
-    for (int i = 0; i < obj->capacity; i++) {
-        if (obj->items[i] != 0) return obj->items[i];
-    }
-
-    // Return the element at that index
-    return 0;
 }
 
 void hashSetFree(hashSet* obj) {
