@@ -36,7 +36,6 @@ typedef struct Bucket {
     int key;
     int value;
     struct Bucket* next;
-    struct Bucket* prev;
 } Bucket;
 
 typedef struct {
