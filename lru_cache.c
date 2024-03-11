@@ -5,11 +5,12 @@
  * Author: Frank
  * Last Modified: Mon Mar 11 2024
  * Modified By: Frank
- * 
+ *
  * Implement the LRUCache class:
     - LRUCache(int capacity) Initialize the LRU cache with positive size capacity.
     - int get(int key) Return the value of the key if the key exists, otherwise return -1.
-    - void put(int key, int value) Update the value of the key if the key exists. Otherwise, add the key-value pair to the cache. If the number of keys exceeds the capacity from this operation, evict the least recently used key.
+    - void put(int key, int value) Update the value of the key if the key exists. Otherwise, add the key-value pair to
+ the cache. If the number of keys exceeds the capacity from this operation, evict the least recently used key.
  * The functions get and put must each run in O(1) average time complexity.
  *
  * Example:
@@ -24,7 +25,7 @@
     lRUCache.get(3);    // return 3
     lRUCache.get(4);    // return 4
  */
-
+// https://www.w3resource.com/c-programming-exercises/hash/c-hash-exercises-9.php
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,7 +35,7 @@
 
 typedef struct Bucket {
     int key;
-    int value;
+    void* value;
     struct Bucket* next;
 } Bucket;
 
@@ -46,10 +47,10 @@ typedef struct {
 
 /* Hash Table */
 uint hashKey(int key) {
-    return key % CAPACITY;
+    return key;
 }
 
-Bucket* itemCreate(int key, int value) {
+Bucket* itemCreate(int key, void* value) {
     Bucket* new = (Bucket*)malloc(sizeof(Bucket));
     if (new == NULL) {
         fprintf(stderr, "Memory allocation failed.\n");
@@ -62,16 +63,19 @@ Bucket* itemCreate(int key, int value) {
 }
 
 
-HashTable* hashTableCreate() {
-    HashTable* set = (HashTable*)malloc(sizeof(HashTable));
-    set->size = 0;
-    set->capacity = CAPACITY;
-    for (int i = 0; i < CAPACITY; i++) set->table[i] = NULL;
-    return set;
+HashTable* hashTableCreate(int capacity) {
+    HashTable* ht = (HashTable*)malloc(sizeof(HashTable));
+    if (ht != NULL) {
+        ht->table = (Bucket**)malloc(sizeof(Bucket*) * capacity);
+        ht->size = 0;
+        ht->capacity = capacity;
+        for (int i = 0; i < capacity; i++) ht->table[i] = NULL;
+    }
+    return ht;
 }
 
 bool hashTableContain(HashTable* obj, int key) {
-    uint hashkey = hashKey(key);
+    uint hashkey = hashKey(key) % obj->capacity;
     Bucket* item = obj->table[hashkey];
     while (item != NULL) {
         if (item->key == key) return true;
@@ -80,10 +84,25 @@ bool hashTableContain(HashTable* obj, int key) {
     return false;
 }
 
-bool hashTableInsert(HashTable* obj, int key, int value) {
+Bucket* hashTableGet(HashTable* obj, int key) {
+    uint hashkey = hashKey(key) % obj->capacity;
+    Bucket* item = obj->table[hashkey];
+    while (item != NULL) {
+        if (item->key == key) return item;
+        item = item->next;
+    }
+    return NULL;
+}
+
+bool hashTableInsert(HashTable* obj, int key, void* value) {
+    // hash table is full!
+    if (obj->size == obj->capacity) return false;
+
+    // key is already in hash table!
     if (hashTableContain(obj, key)) return false;
 
-    uint hashkey = hashKey(key);
+    uint hashkey = hashKey(key) % obj->capacity;
+
     // Put the new in the first.
     Bucket* new = itemCreate(key, value);
     new->next = obj->table[hashkey];
@@ -93,8 +112,30 @@ bool hashTableInsert(HashTable* obj, int key, int value) {
     return true;
 }
 
+bool hashTablePut(HashTable* obj, int key, void* value) {
+    // key is already in hash table!
+    uint hashkey = hashKey(key) % obj->capacity;
+
+    Bucket* existed = hashTableGet(obj, key);
+    if (existed != NULL) {
+        // Update key-value pair
+        existed->value = value;
+    } else {
+        // hash table is full!
+        if (obj->size == obj->capacity) return false;
+
+        // Put the new in the first.
+        Bucket* new = itemCreate(key, value);
+        new->next = obj->table[hashkey];
+        obj->table[hashkey] = new;
+        obj->size++;
+    }
+
+    return true;
+}
+
 bool hashTableRemove(HashTable* obj, int key) {
-    uint hashkey = hashKey(key);
+    uint hashkey = hashKey(key) % obj->capacity;
     Bucket* item = obj->table[hashkey];
     Bucket* prev = NULL;
     while (item != NULL) {
@@ -106,7 +147,7 @@ bool hashTableRemove(HashTable* obj, int key) {
                 // The non-first bucket to be removed
                 prev->next = item->next;
             }
-            free(item);
+            bucketFree(item);
             obj->size--;
             return true;
         }
@@ -117,12 +158,19 @@ bool hashTableRemove(HashTable* obj, int key) {
     return false;
 }
 
+void bucketFree(Bucket* bucket) {
+    // free when value is allocated in heap!
+    free(bucket->value);
+    free(bucket);
+}
+
 void hashTableFree(HashTable* obj) {
     for (int i = 0; i < obj->capacity; i++) {
         Bucket* item = obj->table[i];
         while (item != NULL) {
-            free(item);
-            item = item->next;
+            Bucket* next = item->next;
+            bucketFree(item);
+            item = next;
         }
     }
     free(obj);
@@ -131,26 +179,34 @@ void hashTableFree(HashTable* obj) {
 /* Hash Table */
 
 
-
 typedef struct {
-    HashTable ht;
+    HashTable* ht;
+    Bucket* head;
+    Bucket* tail;
+    int size;
+    int capacity;
 } LRUCache;
 
 
 LRUCache* lRUCacheCreate(int capacity) {
-    
+    LRUCache* cache = (LRUCache*)malloc(sizeof(LRUCache));
+    cache->ht = hashTableCreate(capacity);
+    cache->head = NULL;
+    cache->tail = NULL;
+    cache->size = 0;
+    cache->capacity = capacity;
 }
 
 int lRUCacheGet(LRUCache* obj, int key) {
-    
 }
 
 void lRUCachePut(LRUCache* obj, int key, int value) {
-    
 }
 
 void lRUCacheFree(LRUCache* obj) {
-    
+    hashTableFree(obj->ht);
+    obj->head = NULL;
+    obj->tail = NULL;
 }
 
 int main() {
