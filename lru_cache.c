@@ -133,11 +133,7 @@ void hashTableFree(HashTable* obj) {
 
 
 typedef struct {
-    Bucket** table;
-    int size;
-    int capacity;
-    Bucket* head;
-    Bucket* tail;
+    HashTable ht;
 } LRUCache;
 
 
