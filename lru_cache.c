@@ -309,7 +309,7 @@ void lRUCachePut(LRUCache* obj, int key, int value) {
         //  If cache is full, evict the tail bucket firstly.
         if (obj->size == obj->capacity) {
             IntValue* temp = obj->tail;
-            IntValue* new_tail = temp->prev;
+            IntValue* new_tail = obj->tail->prev;
 
             // If there are more than 2 buckets
             if (new_tail != NULL) {
@@ -322,8 +322,9 @@ void lRUCachePut(LRUCache* obj, int key, int value) {
                 obj->head = NULL;
             }
 
+            int temp_key = temp->key;
             intValueFree(temp);
-            hashTableRemove(obj->ht, temp->key);
+            hashTableRemove(obj->ht, temp_key);
 
             obj->size--;
         }
