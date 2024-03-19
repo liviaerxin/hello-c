@@ -27,6 +27,8 @@
  */
 // https://www.w3resource.com/c-programming-exercises/hash/c-hash-exercises-9.php
 // https://www.andreinc.net/2021/10/02/implementing-hash-tables-in-c-part-1
+// https://github.com/nomemory/chained-hash-table-c
+// https://www.andreinc.net/2021/10/02/implementing-hash-tables-in-c-part-1
 
 #include <stdbool.h>
 #include <stdio.h>
